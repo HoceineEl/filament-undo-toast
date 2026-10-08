@@ -1,0 +1,14 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    level: 6
+    paths:
+        - src
+    treatPhpDocTypesAsCertain: false
+    ignoreErrors:
+        # Filament's Macroable rebinds macro closures to the action, which PHPStan cannot see.
+        -
+            identifier: varTag.nativeType
+            path: src/Support/UndoableMacro.php
+            count: 1
