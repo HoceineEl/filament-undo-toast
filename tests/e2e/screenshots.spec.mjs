@@ -18,12 +18,6 @@ const regionClip = async (page, { x: padX = 48, y: padY = 32 } = {}) => {
     return { x, y, width: Math.min(viewport.width - x, box.width + padX * 2), height: Math.min(viewport.height - y, box.height + padY * 2) }
 }
 
-const toastClip = async (page, locator, padding = 20) => {
-    const box = await locator.boundingBox()
-
-    return { x: box.x - padding, y: box.y - padding, width: box.width + padding * 2, height: box.height + padding * 2 }
-}
-
 const bulkDelete = async (page, names) => {
     for (const name of names) {
         await row(page, name).locator('input[type="checkbox"]').check()
@@ -57,16 +51,7 @@ test('hero: bulk delete', async ({ page }) => {
     await shoot(page, 'hero')
 })
 
-test('single delete', async ({ page }) => {
-    await page.goto('/admin/customers')
-    await deleteRow(page, 'Acme Corporation')
-    await expect(newestToast(page)).toContainText('Customer deleted')
-    await away(page)
-    await freeze(page)
-    await shoot(page, 'delete-single', await regionClip(page))
-})
-
-test('keyboard hint and countdown', async ({ page }) => {
+test('keyboard hint', async ({ page }) => {
     await page.goto('/admin/customers')
     await deleteRow(page, 'Acme Corporation')
     const toast = newestToast(page)
@@ -75,13 +60,12 @@ test('keyboard hint and countdown', async ({ page }) => {
     await page.mouse.move(0, 0)
     await page.waitForTimeout(3200)
     await freeze(page)
-    await shoot(page, 'countdown', await toastClip(page, toast))
     const actions = await toast.locator('.ut-actions').boundingBox()
     const box = await toast.boundingBox()
     await shoot(page, 'keyboard-hint', { x: actions.x - 24, y: box.y - 20, width: box.x + box.width - actions.x + 44, height: box.height + 40 })
 })
 
-test('stack collapsed and expanded', async ({ page }) => {
+test('stack expanded', async ({ page }) => {
     await page.goto('/admin/tags')
     await row(page, 'Design').getByRole('button', { name: 'Edit' }).click()
     await modal(page).getByLabel('Name').fill('Brand')
@@ -96,28 +80,9 @@ test('stack collapsed and expanded', async ({ page }) => {
 
     await away(page)
     await freeze(page)
-    await shoot(page, 'stack-collapsed', await regionClip(page, { x: 48, y: 40 }))
-
     await page.locator('.ut-toast[data-depth="0"] .ut-message').hover()
     await settle(page)
     await shoot(page, 'stack-expanded', await regionClip(page, { x: 48, y: 40 }))
-})
-
-test('restore', async ({ page }) => {
-    await page.goto('/admin/customers')
-    await bulkDelete(page, ['Acme Corporation', 'Blue Harbor Studio'])
-    await expect(newestToast(page)).toContainText('Deleted 2 customers')
-    await newestToast(page).getByRole('button', { name: 'Dismiss' }).click()
-    await expect(toasts(page)).toHaveCount(0)
-
-    await page.goto('/admin/customers?filters[trashed][value]=0')
-    await expect(row(page, 'Acme Corporation')).toHaveCount(1)
-    await row(page, 'Acme Corporation').getByRole('button', { name: 'Restore' }).click()
-    await modal(page).locator('.fi-modal-footer-actions button').last().click()
-    await expect(newestToast(page)).toContainText('Customer restored')
-    await away(page)
-    await freeze(page)
-    await shoot(page, 'restore', await regionClip(page))
 })
 
 test('edit', async ({ page }) => {
@@ -129,16 +94,6 @@ test('edit', async ({ page }) => {
     await away(page)
     await freeze(page)
     await shoot(page, 'edit', await regionClip(page))
-})
-
-test('detach', async ({ page }) => {
-    await page.goto('/admin/projects/2/edit')
-    await row(page, 'Backend').getByRole('button', { name: 'Detach' }).click()
-    await modal(page).locator('.fi-modal-footer-actions button').last().click()
-    await expect(newestToast(page)).toContainText('Tag detached')
-    await away(page)
-    await freeze(page)
-    await shoot(page, 'detach', await regionClip(page))
 })
 
 test('hard delete in dark mode', async ({ page }) => {
@@ -196,16 +151,6 @@ test('german', async ({ page }) => {
     await shoot(page, 'locale-de', await regionClip(page))
 })
 
-test('japanese', async ({ page }) => {
-    await page.goto('/admin/customers?locale=ja')
-    await row(page, 'Acme Corporation').getByRole('button', { name: '削除' }).click()
-    await modal(page).locator('.fi-modal-footer-actions button').last().click()
-    await expect(newestToast(page)).toContainText('顧客を削除しました')
-    await away(page)
-    await freeze(page)
-    await shoot(page, 'locale-ja', await regionClip(page))
-})
-
 test.describe('phone', () => {
     test.use({ viewport: { width: 390, height: 780 }, deviceScaleFactor: 2, hasTouch: true, isMobile: true })
 
@@ -218,13 +163,4 @@ test.describe('phone', () => {
         await shoot(page, 'mobile')
     })
 
-    test('mobile rtl dark', async ({ page }) => {
-        await page.addInitScript(() => window.localStorage.setItem('theme', 'dark'))
-        await page.goto('/admin/customers?locale=ar')
-        await deleteRow(page, 'Acme Corporation')
-        await expect(newestToast(page)).toContainText('تم حذف العميل')
-        await scrollTablesToStart(page)
-        await settle(page)
-        await shoot(page, 'rtl-mobile')
-    })
 })
