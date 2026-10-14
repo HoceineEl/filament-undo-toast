@@ -470,6 +470,18 @@ it('undoes a delete', function (): void {
 });
 ```
 
+## More from Hoceine
+
+Paid packages for Filament 4 and 5 by the same author:
+
+<table>
+<tr>
+<td width="33%" valign="top"><a href="https://filamentcraft.dev?ref=undo-toast"><img src="https://raw.githubusercontent.com/HoceineEl/filament-undo-toast/main/docs/images/more/filamentcraft.jpg" alt="FilamentCraft"></a><br><b><a href="https://filamentcraft.dev?ref=undo-toast">FilamentCraft</a></b><br>A visual website builder inside your Filament panel: drag sections onto a live canvas, edit against a preview, publish.</td>
+<td width="33%" valign="top"><a href="https://media-library.hoceine.com?ref=undo-toast"><img src="https://raw.githubusercontent.com/HoceineEl/filament-undo-toast/main/docs/images/more/media-library-pro.jpg" alt="Media Library Pro"></a><br><b><a href="https://media-library.hoceine.com?ref=undo-toast">Media Library Pro</a></b><br>One shared media library: folders, tags, focal points, chunked uploads, duplicate detection and usage tracking.</td>
+<td width="33%" valign="top"><a href="https://scheduler-pro.hoceine.com?ref=undo-toast"><img src="https://raw.githubusercontent.com/HoceineEl/filament-undo-toast/main/docs/images/more/scheduler-pro.jpg" alt="Scheduler Pro"></a><br><b><a href="https://scheduler-pro.hoceine.com?ref=undo-toast">Scheduler Pro</a></b><br>Resource timelines, Gantt with dependencies, availability-aware booking, recurring events and Kanban boards.</td>
+</tr>
+</table>
+
 ## Contributing
 
 Open an issue first for larger changes. After editing `resources/js` or `resources/css`, run `npm run build` to rebuild `dist/`, then run the tests above.
